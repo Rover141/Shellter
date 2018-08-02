@@ -11,7 +11,7 @@ echo -n "Enter IP Address of the Victim: "
 read ip_addr
 echo -n "Enter Port Number(4444-5555): "
 read port
-nc -nlv $ip_addr -p $port 
+nc -nlv $ip_addr -p $port & xterm -e ping $ip_addr 
 
 }
 
